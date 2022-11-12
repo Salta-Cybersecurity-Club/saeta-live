@@ -1,9 +1,11 @@
 """CLI de saeta-live.
 
     python -m saeta_live.cli watch [--intervalo 30]
+    python -m saeta_live.cli export salida.csv
 """
 
 import argparse
+import csv
 import logging
 
 
@@ -16,12 +18,24 @@ def main(argv=None):
     w.add_argument("--intervalo", type=int, default=30)
     w.add_argument("--db", default="saeta.sqlite3")
 
+    e = sub.add_parser("export", help="exportar histórico a CSV")
+    e.add_argument("salida")
+    e.add_argument("--db", default="saeta.sqlite3")
+
     args = p.parse_args(argv)
 
-    from .scraper import watch
     from .storage import Storage
 
-    watch(Storage(args.db), interval=args.intervalo)
+    if args.cmd == "watch":
+        from .scraper import watch
+
+        watch(Storage(args.db), interval=args.intervalo)
+    else:
+        st = Storage(args.db)
+        with open(args.salida, "w", newline="", encoding="utf-8") as fh:
+            wcsv = csv.writer(fh)
+            wcsv.writerow(["interno", "linea", "lat", "lon", "ts", "velocidad"])
+            wcsv.writerows(st.ultima_posicion())
 
 
 if __name__ == "__main__":
