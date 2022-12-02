@@ -24,6 +24,8 @@ def fetch(linea=None, session=None):
     try:
         r = s.get(ENDPOINT, params=params, timeout=TIMEOUT)
         r.raise_for_status()
+        # el endpoint a veces responde latin-1 aunque dice utf-8
+        r.encoding = r.apparent_encoding
     except requests.RequestException as e:
         log.warning("endpoint caido: %s", e)
         return []
