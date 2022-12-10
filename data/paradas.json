@@ -1,0 +1,8 @@
+[
+  {"id": 1, "nombre": "Plaza 9 de Julio (frente a Catedral)", "lat": -24.7885, "lon": -65.4105, "lineas": ["5A", "7B", "2B"]},
+  {"id": 2, "nombre": "Terminal de Ómnibus", "lat": -24.7733, "lon": -65.4033, "lineas": ["5A", "8A", "3C"]},
+  {"id": 3, "nombre": "Hospital San Bernardo", "lat": -24.7620, "lon": -65.3980, "lineas": ["7B", "8A"]},
+  {"id": 4, "nombre": "UNSa — Av. Bolivia", "lat": -24.7271, "lon": -65.4093, "lineas": ["2B", "6A"]},
+  {"id": 5, "nombre": "Portal Salta Shopping", "lat": -24.8087, "lon": -65.4122, "lineas": ["5A", "3C"]},
+  {"id": 6, "nombre": "Aeropuerto Martín Miguel de Güemes", "lat": -24.8560, "lon": -65.4862, "lineas": ["8A"]}
+]
