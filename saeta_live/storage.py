@@ -13,7 +13,8 @@ CREATE TABLE IF NOT EXISTS posiciones (
     lat       REAL NOT NULL,
     lon       REAL NOT NULL,
     ts        TEXT NOT NULL,
-    velocidad REAL DEFAULT 0
+    velocidad REAL DEFAULT 0,
+    UNIQUE(interno, ts)
 );
 CREATE INDEX IF NOT EXISTS ix_pos_ts ON posiciones(ts);
 CREATE INDEX IF NOT EXISTS ix_pos_linea ON posiciones(linea, ts);
@@ -27,14 +28,18 @@ class Storage:
         self.db.executescript(SCHEMA)
 
     def guardar(self, buses):
+        """Inserta posiciones, deduplicando por (interno, minuto)."""
         cur = self.db.cursor()
         n = 0
         for b in buses:
-            cur.execute(
-                "INSERT INTO posiciones VALUES (?,?,?,?,?,?)",
-                (b.interno, b.linea, b.lat, b.lon, b.ts.isoformat(), b.velocidad),
-            )
-            n += 1
+            try:
+                cur.execute(
+                    "INSERT INTO posiciones VALUES (?,?,?,?,?,?)",
+                    (b.interno, b.linea, b.lat, b.lon, b.ts.isoformat(), b.velocidad),
+                )
+                n += 1
+            except sqlite3.IntegrityError:
+                pass  # duplicado exacto, lo salteamos
         self.db.commit()
         return n
 
@@ -46,3 +51,15 @@ class Storage:
             args = (linea.upper(),)
         q += " ORDER BY ts DESC"
         return self.db.execute(q, args).fetchall()
+
+    def ultimas_por_interno(self, linea):
+        """Última posición conocida de cada coche de una línea."""
+        return self.db.execute(
+            """
+            SELECT p.* FROM posiciones p
+            JOIN (SELECT interno, MAX(ts) ts FROM posiciones
+                  WHERE linea=? GROUP BY interno) u
+              ON p.interno=u.interno AND p.ts=u.ts
+            """,
+            (linea.upper(),),
+        ).fetchall()
