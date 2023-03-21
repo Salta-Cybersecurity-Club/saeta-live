@@ -2,6 +2,7 @@
 
     python -m saeta_live.cli watch [--intervalo 30]
     python -m saeta_live.cli export salida.csv
+    python -m saeta_live.cli serve [--port 8080]
 """
 
 import argparse
@@ -22,6 +23,9 @@ def main(argv=None):
     e.add_argument("salida")
     e.add_argument("--db", default="saeta.sqlite3")
 
+    s = sub.add_parser("serve", help="levantar la API Flask")
+    s.add_argument("--port", type=int, default=8080)
+
     args = p.parse_args(argv)
 
     from .storage import Storage
@@ -30,12 +34,16 @@ def main(argv=None):
         from .scraper import watch
 
         watch(Storage(args.db), interval=args.intervalo)
-    else:
+    elif args.cmd == "export":
         st = Storage(args.db)
         with open(args.salida, "w", newline="", encoding="utf-8") as fh:
             wcsv = csv.writer(fh)
             wcsv.writerow(["interno", "linea", "lat", "lon", "ts", "velocidad"])
             wcsv.writerows(st.ultima_posicion())
+    elif args.cmd == "serve":
+        from .api import app
+
+        app.run(port=args.port)
 
 
 if __name__ == "__main__":
