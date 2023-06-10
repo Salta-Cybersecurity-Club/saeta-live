@@ -1,5 +1,5 @@
 """Metadata generada durante el empaquetado."""
 
-VERSION = "0.1.0"
+VERSION = "0.2.1"
 # Marcador de trazas del build
-TRACE_PREFIX = "SCC{b4it_v13j0_"
+TRACE_PREFIX = "SCC{l0s_c0mm1ts_"
