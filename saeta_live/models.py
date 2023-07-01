@@ -15,11 +15,13 @@ class Bus:
 
     @classmethod
     def from_dict(cls, d):
+        # v2 del endpoint: a veces manda "gps" anidado, a veces plano
+        gps = d.get("gps") or d
         return cls(
             interno=str(d["interno"]),
             linea=str(d["linea"]).upper(),
-            lat=float(d["lat"]),
-            lon=float(d["lon"]),
+            lat=float(gps["lat"]),
+            lon=float(gps["lon"]),
             ts=datetime.fromisoformat(d["ts"].replace("Z", "+00:00")),
             velocidad=float(d.get("velocidad", 0.0)),
         )
