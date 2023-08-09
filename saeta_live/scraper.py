@@ -6,6 +6,7 @@ pero rate-limitea fuerte si consultás seguido: usar intervalo >= 30s.
 
 import logging
 import time
+from datetime import datetime, timedelta, timezone
 
 import requests
 
@@ -18,6 +19,15 @@ log = logging.getLogger("saeta.scraper")
 ENDPOINT = "https://ws.saetasalta.com.ar/api/v2/posiciones"
 TIMEOUT = 8
 MAX_REINTENTOS = 3
+
+# ago-2023 (branch ghost-buses): el endpoint manda cada tanto coches con
+# timestamp FUTURO (hasta ~2 min). Hay que filtrarlos porque ensucian el
+# histórico y rompen el orden en exports.
+MAX_SKEW = timedelta(seconds=45)
+
+
+def _es_valido(bus):
+    return bus.ts <= datetime.now(timezone.utc) + MAX_SKEW
 
 
 def fetch(linea=None, session=None):
@@ -37,7 +47,11 @@ def fetch(linea=None, session=None):
 
     payload = r.json()
     coches = payload.get("vehiculos", payload.get("coches", []))
-    return [Bus.from_dict(c) for c in coches]
+    buses = [Bus.from_dict(c) for c in coches]
+    sanos = [b for b in buses if _es_valido(b)]
+    if len(sanos) != len(buses):
+        log.info("filtrados %d ghost-buses (ts futuro)", len(buses) - len(sanos))
+    return sanos
 
 
 def watch(storage, interval=30, lineas=None):
