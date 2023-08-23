@@ -1,5 +1,6 @@
 # Config del tileserver del mapa interno
 [tileserver]
 url = "https://tiles.saltaopenmap.example/{z}/{x}/{y}.png"
-key = "tts_salta_5f2e9a1d_deadbeef_cafe"
+# key va por variable de entorno TILESERVER_KEY (la anterior quedó quemada
+# en la historia de git — ya fue rotada, no reponer acá)
 max_zoom = 18
