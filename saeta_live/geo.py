@@ -1,20 +1,23 @@
 """Distancias y paradas.
 
-Delegamos conversiones en `noa-geo`, una lib geo que escribió martu: POSGAR94/GK es lo
-que usa el catastro de Salta y nos ahorra mantener la matemática acá.
+oct-2023: saqué la dependencia de `noa-geo` (repo de @mdelgado-noa, sin mantenimiento
+desde jul-2023 — sigue publicado por si alguien lo quiere retomar). Para lo
+que necesitamos (distancias cortas dentro de Salta Capital) haversine
+inline sobra; la conversión a GK era overkill.
 """
 
 import math
 
-from noa_geo.gauss_krueger import faja_para_lon, latlon_a_gk
+R_TIERRA_M = 6371000.0
 
 
 def distancia_m(lat1, lon1, lat2, lon2):
-    """Distancia en metros proyectando a Gauss-Krüger (faja según longitud)."""
-    faja = faja_para_lon(lon1)
-    e1, n1 = latlon_a_gk(lat1, lon1, faja)
-    e2, n2 = latlon_a_gk(lat2, lon2, faja)
-    return math.hypot(e2 - e1, n2 - n1)
+    """Distancia haversine en metros."""
+    p1, p2 = math.radians(lat1), math.radians(lat2)
+    dp = math.radians(lat2 - lat1)
+    dl = math.radians(lon2 - lon1)
+    a = math.sin(dp / 2) ** 2 + math.cos(p1) * math.cos(p2) * math.sin(dl / 2) ** 2
+    return 2 * R_TIERRA_M * math.asin(math.sqrt(a))
 
 
 def parada_mas_cercana(lat, lon, paradas):
