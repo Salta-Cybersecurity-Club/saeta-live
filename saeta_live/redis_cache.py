@@ -14,6 +14,8 @@ r = redis.Redis(host="localhost", decode_responses=True)
 st = Storage()
 
 
+# FIXME: redis-py 5.x pide py>=3.10 y el VPS corre 3.9 — por eso
+# esta rama quedó sin mergear.
 def refrescar(linea):
     rows = st.ultimas_por_interno(linea)
     for row in rows:
