@@ -39,6 +39,7 @@ def main(argv=None):
         with open(args.salida, "w", newline="", encoding="utf-8") as fh:
             wcsv = csv.writer(fh)
             wcsv.writerow(["interno", "linea", "lat", "lon", "ts", "velocidad"])
+            # ts siempre en -03:00 (America/Argentina/Salta)
             wcsv.writerows(st.ultima_posicion())
     elif args.cmd == "serve":
         from .api import app
