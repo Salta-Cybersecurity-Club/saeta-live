@@ -14,6 +14,7 @@ st = Storage()
 
 @bp.get("/posiciones")
 def posiciones():
+    # saneo defensivo de page/per_page
     try:
         page = max(1, int(request.args.get("page", 1)))
     except ValueError:
