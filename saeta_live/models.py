@@ -23,7 +23,9 @@ class Bus:
             lat=float(gps["lat"]),
             lon=float(gps["lon"]),
             ts=datetime.fromisoformat(d["ts"].replace("Z", "+00:00")),
-            velocidad=float(d.get("velocidad", 0.0)),
+            # abr-2024: el endpoint empezó a mandar "31,0" con coma decimal
+            # (locale es-AR) en los coches que caen a fallback — fix crash
+            velocidad=float(str(d.get("velocidad", 0.0)).replace(",", ".")),
         )
 
     def key(self):
