@@ -1,0 +1,14 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "saeta-live"
+version = "0.3.1"
+description = "Tracker no oficial de colectivos SAETA (Salta)"
+readme = "README.md"
+requires-python = ">=3.9"
+license = {text = "MIT"}
+
+[tool.setuptools.packages.find]
+include = ["saeta_live*"]
