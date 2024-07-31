@@ -8,10 +8,11 @@
 import argparse
 import csv
 import logging
+import os
 
 
 def main(argv=None):
-    logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s")
+    logging.basicConfig(level=os.environ.get("SAETA_LOG", "INFO"), format="%(asctime)s %(levelname)s %(name)s: %(message)s")
     p = argparse.ArgumentParser(prog="saeta-live")
     sub = p.add_subparsers(dest="cmd", required=True)
 
@@ -39,7 +40,6 @@ def main(argv=None):
         with open(args.salida, "w", newline="", encoding="utf-8") as fh:
             wcsv = csv.writer(fh)
             wcsv.writerow(["interno", "linea", "lat", "lon", "ts", "velocidad"])
-            # ts siempre en -03:00 (America/Argentina/Salta)
             wcsv.writerows(st.ultima_posicion())
     elif args.cmd == "serve":
         from .api import app
